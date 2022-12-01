@@ -5,9 +5,11 @@ namespace ADM.Core
 {
     public static class EventDispatcher
     {
+        public const string ALL = "<All>";
+
         public class EventData
         {
-            public string Name { get; private set; }
+            public readonly string Name;
             public EventData(string name)
                 => Name = name;
         }
@@ -18,7 +20,10 @@ namespace ADM.Core
             where T : EventData
         {
             Assert.NotNull(eventReceiver, "Cannot add a null event receiver");
-            Assert.That(eventNames.Length > 0, "Must provide the name of events that the receiver will handle");
+
+            // If no event names are provided, then this receiver will be notified of all events of this type.
+            if (eventNames.Length == 0)
+                eventNames = new[] { ALL };
 
             var eventType = typeof(T);
             if (!m_Receivers.TryGetValue(eventType, out var eventReceivers))
@@ -64,11 +69,14 @@ namespace ADM.Core
         public static void Dispatch<T>(T eventData)
             where T : EventData 
         {
-            if (m_Receivers.TryGetValue(typeof(T), out var eventReceivers) && 
-                eventReceivers.TryGetValue(eventData.Name, out var receivers))
+            if (m_Receivers.TryGetValue(typeof(T), out var eventReceivers))
             {
-                foreach (var receiver in receivers)
-                    (receiver as IEventReceiver<T>).HandleEvent(in eventData);
+                if (eventReceivers.TryGetValue(eventData.Name, out var receivers) ||
+                    eventReceivers.TryGetValue(ALL, out receivers))
+                {
+                    foreach (var receiver in receivers)
+                        (receiver as IEventReceiver<T>).HandleEvent(in eventData);
+                }
             }
         }
     }

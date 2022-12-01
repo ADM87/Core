@@ -28,7 +28,7 @@ namespace ADM.Core
             => Camera.main.ScreenPointToRay(m_TouchPosition);
 
         private void Awake()
-            => Assert.NotNull(m_Target, "Must assign a TouchTarget reference");
+            => Find.Required(out m_Target);
 
         private void OnEnable()
         {
