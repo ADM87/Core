@@ -2,7 +2,7 @@
 {
     public interface IEventReceiver { }
     public interface IEventReceiver<TEventData> : IEventReceiver
-        where TEventData : EventService.EventData
+        where TEventData : EventDispatcher.EventData
     {
         void HandleEvent(in TEventData eventData);
     }

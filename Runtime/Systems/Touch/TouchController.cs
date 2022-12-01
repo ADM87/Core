@@ -32,14 +32,12 @@ namespace ADM.Core
 
         private void OnEnable()
         {
+            ResetControls(true);
             m_Target.TouchInteraction += OnTouchInteraction;
         }
 
         private void OnDisable()
-        {
-            m_Target.TouchInteraction -= OnTouchInteraction;
-            ResetControls(true);
-        }
+            => m_Target.TouchInteraction -= OnTouchInteraction;
 
         private void Update()
         {
@@ -123,7 +121,7 @@ namespace ADM.Core
         }
 
         private void SendTouchEvent(string name)
-            => EventService.Dispatch(new TouchEvent(name, 
+            => EventDispatcher.Dispatch(new TouchEvent(name, 
                 m_TouchPosition, 
                 m_WorldPosition, 
                 m_WorldDownPosition, 

@@ -22,11 +22,11 @@ namespace ADM.Core
         public override void Activate()
         {
             m_Target = VirtualCamera.transform.position;
-            EventService.AddReceiver(this, TouchEvent.DRAG_START, TouchEvent.DRAG, TouchEvent.CANCEL);
+            EventDispatcher.AddReceiver(this, TouchEvent.DRAG_START, TouchEvent.DRAG, TouchEvent.CANCEL);
         }
 
         public override void Deactivate()
-            => EventService.RemoveReceiver(this);
+            => EventDispatcher.RemoveReceiver(this);
 
         public void HandleEvent(in TouchEvent eventData)
         {

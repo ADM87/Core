@@ -2,7 +2,7 @@
 
 namespace ADM.Core
 {
-    public class TouchEvent : EventService.EventData
+    public class TouchEvent : EventDispatcher.EventData
     {
         public const string DOWN = "TouchEvent.Down";
         public const string UP = "TouchEvent.Up";
