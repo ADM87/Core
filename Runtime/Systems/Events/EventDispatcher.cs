@@ -5,7 +5,8 @@ namespace ADM.Core
 {
     public static class EventDispatcher
     {
-        public const string ALL = "<All>";
+        // If no event names are provided, then the receiver will be notified of all events of the specified type.
+        public const string RECEIVE_ALL = "<RECEIVE_ALL>";
 
         public class EventData
         {
@@ -21,9 +22,8 @@ namespace ADM.Core
         {
             Assert.NotNull(eventReceiver, "Cannot add a null event receiver");
 
-            // If no event names are provided, then this receiver will be notified of all events of this type.
             if (eventNames.Length == 0)
-                eventNames = new[] { ALL };
+                eventNames = new[] { RECEIVE_ALL };
 
             var eventType = typeof(T);
             if (!m_Receivers.TryGetValue(eventType, out var eventReceivers))
@@ -71,12 +71,18 @@ namespace ADM.Core
         {
             if (m_Receivers.TryGetValue(typeof(T), out var eventReceivers))
             {
-                if (eventReceivers.TryGetValue(eventData.Name, out var receivers) ||
-                    eventReceivers.TryGetValue(ALL, out receivers))
-                {
-                    foreach (var receiver in receivers)
-                        (receiver as IEventReceiver<T>).HandleEvent(in eventData);
-                }
+                Dispatch(RECEIVE_ALL, eventData, eventReceivers);
+                Dispatch(eventData.Name, eventData, eventReceivers);
+            }
+        }
+
+        private static void Dispatch<T>(string eventName, T eventData, Dictionary<string, HashSet<IEventReceiver>> eventReceivers)
+            where T : EventData
+        {
+            if (eventReceivers.TryGetValue(eventName, out var receivers))
+            {
+                foreach (var receiver in receivers)
+                    (receiver as IEventReceiver<T>).HandleEvent(in eventData);
             }
         }
     }
