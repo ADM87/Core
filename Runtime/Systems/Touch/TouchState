@@ -1,0 +1,12 @@
+namespace CB.Systems
+{
+    public enum TouchState
+    {
+        None,
+
+        Down,
+        Up,
+        Over,
+        Out
+    }
+}

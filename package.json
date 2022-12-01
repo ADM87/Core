@@ -1,0 +1,16 @@
+{
+    "name": "com.adm.core",
+    "displayName": "ADM Core",
+    "author": "Aaron Malley",
+    "version": "1.0.0",
+    "unity": "2019.4",
+    "hideInEditor": false,
+    "description": "Collection of common components, utilities, and systems.",
+    "dependencies": {
+      "com.unity.cinemachine": "2.8.9"
+    },
+    "repository": {
+      "url": "https://github.com/ADM87/Core.git",
+      "type": "git"
+    }
+}

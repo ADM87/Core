@@ -1,0 +1,18 @@
+{
+    "name": "ADM.Core.Editor",
+    "rootNamespace": "ADM.Core.Editor",
+    "references": [
+        "GUID:24bfba68b96dbae47b8d3ca607c0d474"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
