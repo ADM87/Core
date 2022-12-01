@@ -5,7 +5,7 @@ using UnityEngine;
 namespace ADM.Core
 {
     [AddComponentMenu("")]
-    public class FreeRoamDrag : BaseCinemachineExtension,
+    public class TouchDrag : BaseCinemachineExtension,
         IEventReceiver<TouchEvent>
     {
         private const float MIN_DAMPENING = 0f;
