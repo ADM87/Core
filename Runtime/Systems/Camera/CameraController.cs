@@ -22,8 +22,6 @@ namespace ADM.Core
             foreach (var config in m_Configurations)
             {
                 DeactivateCustomCinemachineExtensions(config);
-                config.VCam.Priority = 0;
-
                 m_ConfigurationMap.Add(config.Key, config);
             }
         }
