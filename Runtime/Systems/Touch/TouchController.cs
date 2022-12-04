@@ -121,11 +121,13 @@ namespace ADM.Core
         }
 
         private void SendTouchEvent(string name)
-            => EventDispatcher.Dispatch(new TouchEvent(name, 
-                m_TouchPosition, 
-                m_WorldPosition, 
-                m_WorldDownPosition, 
-                m_DragVector, 
+        {
+            EventDispatcher.Dispatch(new TouchEvent(name,
+                m_TouchPosition,
+                m_WorldPosition,
+                m_WorldDownPosition,
+                m_DragVector,
                 m_IsDragging));
+        }
     }
 }
