@@ -14,5 +14,15 @@ namespace ADM.Core
             }
             return false;
         }
+
+        public static bool ScanFor<T>(Ray ray, LayerMask layer, out T scannedObject)
+            where T : Component
+        {
+            if (Physics.Raycast(ray, out var hit, 100, layer))
+                return (scannedObject = hit.collider.GetComponent<T>()) != null;
+
+            scannedObject = default;
+            return false;
+        }
     }
 }

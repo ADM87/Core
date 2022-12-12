@@ -11,6 +11,7 @@ namespace ADM.Core
         public const string DRAG_END = "TouchEvent.DragEnd";
         public const string CANCEL = "TouchEvent.Cancel";
 
+        public readonly Ray TouchRay;
         public readonly Vector2 ScreenPosition;
         public readonly Vector3 WorldPosition;
         public readonly Vector3 WorldDownPosition;
@@ -22,6 +23,7 @@ namespace ADM.Core
 
         public TouchEvent(
             string name,
+            Ray touchRay,
             Vector2 screenPosition,
             Vector3 worldPosition,
             Vector3 worldDownPosition,
@@ -29,6 +31,7 @@ namespace ADM.Core
             bool isDragging) : 
             base(name) 
         {
+            TouchRay = touchRay;
             ScreenPosition = screenPosition;
             WorldPosition = worldPosition;
             WorldDownPosition = worldDownPosition;

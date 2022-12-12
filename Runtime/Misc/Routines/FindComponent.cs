@@ -19,7 +19,7 @@ namespace ADM.Core
                 if (m_Elapsed < m_SearchIntervals)
                     return true;
 
-                if ((m_Component = UnityEngine.Object.FindObjectOfType<TComponent>()) != null)
+                if ((m_Component = UnityEngine.Object.FindObjectOfType<TComponent>(true)) != null)
                     m_OnFound(m_Component);
 
                 m_Elapsed = 0f;

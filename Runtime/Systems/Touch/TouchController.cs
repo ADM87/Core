@@ -24,7 +24,7 @@ namespace ADM.Core
         private Vector3 m_WorldDownPosition;
         private Vector3 m_DragVector;
 
-        private Ray CastRay
+        private Ray TouchRay
             => Camera.main.ScreenPointToRay(m_TouchPosition);
 
         private void Awake()
@@ -44,7 +44,7 @@ namespace ADM.Core
             if (!m_IsDown)
                 return;
 
-            if (Raycaster.GetWorldPoint(CastRay, m_DragContactLayer, out m_WorldPosition))
+            if (Raycaster.GetWorldPoint(TouchRay, m_DragContactLayer, out m_WorldPosition))
             {
                 m_DragVector = m_WorldDownPosition - m_WorldPosition;
 
@@ -88,7 +88,7 @@ namespace ADM.Core
 
         private void HandleDown()
         {
-            m_IsDown = Raycaster.GetWorldPoint(CastRay, m_DragContactLayer, out m_WorldPosition);
+            m_IsDown = Raycaster.GetWorldPoint(TouchRay, m_DragContactLayer, out m_WorldPosition);
             if (m_IsDown)
             {
                 m_WorldDownPosition = m_WorldPosition;
@@ -108,7 +108,18 @@ namespace ADM.Core
             ResetControls(false);
         }
 
-        private void ResetControls(bool cancelTouch)
+        private void SendTouchEvent(string name)
+        {
+            EventDispatcher.Dispatch(new TouchEvent(name,
+                TouchRay,
+                m_TouchPosition,
+                m_WorldPosition,
+                m_WorldDownPosition,
+                m_DragVector,
+                m_IsDragging));
+        }
+
+        public void ResetControls(bool cancelTouch)
         {
             if (cancelTouch)
                 SendTouchEvent(TouchEvent.CANCEL);
@@ -118,16 +129,6 @@ namespace ADM.Core
             m_WorldPosition = Vector3.zero;
             m_WorldDownPosition = Vector3.zero;
             m_DragVector = Vector3.zero;
-        }
-
-        private void SendTouchEvent(string name)
-        {
-            EventDispatcher.Dispatch(new TouchEvent(name,
-                m_TouchPosition,
-                m_WorldPosition,
-                m_WorldDownPosition,
-                m_DragVector,
-                m_IsDragging));
         }
     }
 }

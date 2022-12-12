@@ -67,10 +67,13 @@ namespace ADM.Core
                 .ForEach(receiver =>
                 {
                     // Make sure a previous receiver's event stack hasn't removed this receiver from the system.
-                    if (!m_EventReceivers.TryGetValue(eventType, out var rs) || !rs.TryGetValue(receiver, out var eventNames))
+                    if (!m_EventReceivers.ContainsKey(eventType) || !m_EventReceivers[eventType].ContainsKey(receiver))
                         return;
 
-                    if (eventNames.Count == 0 || eventNames.Contains(eventData.Name))
+                    bool receivesEvent = m_EventReceivers[eventType][receiver].Count == 0 
+                                      || m_EventReceivers[eventType][receiver].Contains(eventData.Name);
+
+                    if (receivesEvent)
                         (receiver as IEventReceiver<T>).HandleEvent(eventData);
                 });
         }
