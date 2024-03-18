@@ -2,10 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using UnityEditor;
-using static Core.Assert;
+using static ADM.Assert;
 
-namespace Core
+namespace ADM
 {
     public class ServiceProvider
     {
@@ -17,50 +16,72 @@ namespace Core
         private const string k_circularDependency   = "Service implementation {0} detected a circular dependency on construction";
         private const string k_serviceNotDefined    = "Service implementation for {0} has not been defined";
 
-        internal static Dictionary<Type, Type>           definitions   = new();
-        internal static Dictionary<Type, Type[]>         dependencies  = new();
-        internal static Dictionary<Type, object>         instances     = new();
+        private static Dictionary<Type, Type>       k_definitions   = new();
+        private static Dictionary<Type, Type[]>     k_dependencies  = new();
+        private static Dictionary<Type, object>     k_instances     = new();
 
-        public static void ConstructServices()
+        internal static void CollectServiceDefinitions()
         {
-            CollectServiceDefinitions();
-            ValidateDependencies();
-            foreach (var kvp in definitions)
-                ConstructService(kvp.Key, kvp.Value);
+            IEnumerable<Assembly> assemblies = AppDomain.CurrentDomain.GetAssemblies();
+
+            foreach (var assembly in assemblies)
+            {
+                foreach (var type in assembly.GetTypes())
+                {
+                    if (type.IsAbstract)
+                        continue;
+
+                    var attribute = type.GetCustomAttribute<ServiceDefinitionAttribute>(true);
+                    if (attribute == null)
+                        continue;
+
+                    AddDefinition(attribute.Interface, type);
+                }
+            }
         }
 
         public static T Get<T>()
         {
-            Type type = typeof(T);
-            ASSERT_TRUE(instances.ContainsKey(type), string.Format(k_serviceNotDefined, type.Name));
-            return (T)instances[type];
+            return (T)Get(typeof(T));
         }
 
         public static IEnumerable<T> GetAll<T>()
         {
-            return Enumerable.Empty<T>();
+            return k_definitions
+                .Where(kvp => typeof(T).IsAssignableFrom(kvp.Key))
+                .Select(kvp => (T)Get(kvp.Key));
         }
 
-        private static void CollectServiceDefinitions()
+        public static object Get(Type type)
         {
+            ASSERT_TRUE(k_definitions.ContainsKey(type), string.Format(k_serviceNotDefined, type.Name));
 
+            if (k_instances.TryGetValue(type, out var instance))
+                return instance;
+
+            Type implType = k_definitions[type];
+
+            foreach (Type depType in k_dependencies[implType])
+                ASSERT_FALSE(IsCyclical(implType, depType), string.Format(k_circularDependency, implType.Name));
+
+            return ConstructService(type, implType);
         }
 
         private static void ValidateDependencies()
         {
-            foreach (Type implType in definitions.Values)
+            foreach (Type implType in k_definitions.Values)
             {
-                foreach (Type depType in dependencies[implType])
-                    ASSERT_FALSE(IsCyclical(implType, definitions[depType]), string.Format(k_circularDependency, implType.Name));
+                foreach (Type depType in k_dependencies[implType])
+                    ASSERT_FALSE(IsCyclical(implType, k_definitions[depType]), string.Format(k_circularDependency, implType.Name));
             }
         }
 
         private static void AddDefinition(Type itrfType, Type implType)
         {
-            ASSERT_FALSE(definitions.ContainsKey(itrfType), 
+            ASSERT_FALSE(k_definitions.ContainsKey(itrfType), 
                 string.Format(k_duplicateItrfType, itrfType.Name));
 
-            ASSERT_FALSE(definitions.Any(kvp => kvp.Value.Equals(implType)), 
+            ASSERT_FALSE(k_definitions.Any(kvp => kvp.Value.Equals(implType)), 
                 string.Format(k_duplicateImplType, implType.Name));
 
             ASSERT_TRUE(itrfType.IsAbstract, 
@@ -69,8 +90,8 @@ namespace Core
             ASSERT_TRUE(!implType.IsAbstract, 
                 string.Format(k_abstractImpl, implType.Name));
 
-            definitions.Add(itrfType, implType);
-            dependencies.Add(implType, GetImplementationDependencies(implType));
+            k_definitions.Add(itrfType, implType);
+            k_dependencies.Add(implType, GetImplementationDependencies(implType));
         }
 
         private static Type[] GetImplementationDependencies(Type implementationType)
@@ -93,9 +114,9 @@ namespace Core
             if (type.Equals(dependency))
                 return true;
 
-            foreach (Type depType in dependencies[dependency])
+            foreach (Type depType in k_dependencies[dependency])
             {
-                if (IsCyclical(type, definitions[depType]))
+                if (IsCyclical(type, k_definitions[depType]))
                     return true;
             }
 
@@ -104,24 +125,24 @@ namespace Core
 
         private static object ConstructService(Type itrfType, Type implType)
         {
-            if (instances.TryGetValue(itrfType, out var i))
+            if (k_instances.TryGetValue(itrfType, out var i))
                 return i;
 
             object instance;
-            if (dependencies[implType].Length == 0)
+            if (k_dependencies[implType].Length == 0)
             {
                 instance = Activator.CreateInstance(implType);
             }
             else
             {
                 var dependencies = new List<object>();
-                foreach (var depType in ServiceProvider.dependencies[implType])
-                    dependencies.Add(ConstructService(depType, definitions[depType]));
+                foreach (var depType in ServiceProvider.k_dependencies[implType])
+                    dependencies.Add(ConstructService(depType, k_definitions[depType]));
 
                 instance = Activator.CreateInstance(implType, dependencies.ToArray(), new object[0]);
             }
 
-            instances.Add(itrfType, instance);
+            k_instances.Add(itrfType, instance);
             return instance;
         }
     }

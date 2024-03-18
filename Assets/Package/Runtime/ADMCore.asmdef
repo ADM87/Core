@@ -1,6 +1,6 @@
 {
-    "name": "Core",
-    "rootNamespace": "Core",
+    "name": "ADMCore",
+    "rootNamespace": "ADMCore",
     "references": [],
     "includePlatforms": [],
     "excludePlatforms": [],

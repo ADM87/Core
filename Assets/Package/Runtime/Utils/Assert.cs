@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Core
+namespace ADM
 {
     public static class Assert
     {

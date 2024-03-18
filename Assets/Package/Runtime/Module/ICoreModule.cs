@@ -1,7 +1,7 @@
-﻿namespace Core
+﻿namespace ADM
 {
     public interface ICoreModule
     {
-        void OnRegistered();
+        void Load();
     }
 }

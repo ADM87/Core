@@ -1,4 +1,4 @@
-﻿namespace Core
+﻿namespace ADM
 {
     public sealed class CommandArgs
     {

@@ -1,7 +1,7 @@
 ﻿using System;
-using static Core.Assert;
+using static ADM.Assert;
 
-namespace Core
+namespace ADM
 {
     public class ModuleDefinitionAttribute : ServiceDefinitionAttribute
     {

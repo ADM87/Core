@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Core
+namespace ADM
 {
     [AttributeUsage(AttributeTargets.Class)]
     public class ServiceDefinitionAttribute : Attribute

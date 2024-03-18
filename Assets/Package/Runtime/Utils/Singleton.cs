@@ -1,4 +1,4 @@
-﻿namespace Core
+﻿namespace ADM
 {
     public abstract class Singleton<T> where T : Singleton<T>
     {
