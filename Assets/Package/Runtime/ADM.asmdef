@@ -1,15 +1,13 @@
 {
-    "name": "CoreExample",
-    "rootNamespace": "CoreExample",
-    "references": [
-        "GUID:e1bb95b758806f247874c684c64b2686"
-    ],
+    "name": "ADM",
+    "rootNamespace": "ADM",
+    "references": [],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,
     "precompiledReferences": [],
-    "autoReferenced": false,
+    "autoReferenced": true,
     "defineConstraints": [],
     "versionDefines": [],
     "noEngineReferences": false

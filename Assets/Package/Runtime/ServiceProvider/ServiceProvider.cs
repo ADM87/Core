@@ -8,13 +8,14 @@ namespace ADM
 {
     public class ServiceProvider
     {
-        private const string k_duplicateItrfType    = "Service interface type {0} already exists";
-        private const string k_duplicateImplType    = "Service implementation type {0} already exists";
-        private const string k_nonAbstractItrf      = "Service interface type {0} must be an abstract type";
-        private const string k_abstractImpl         = "Service implementation {0} cannot be an abstract type";
-        private const string k_invalidImplCstr      = "Service implementation {0} must contain only one constructor with dependencies";
-        private const string k_circularDependency   = "Service implementation {0} detected a circular dependency on construction";
-        private const string k_serviceNotDefined    = "Service implementation for {0} has not been defined";
+        private const string k_duplicateItrfType        = "Service interface type {0} already exists";
+        private const string k_duplicateImplType        = "Service implementation type {0} already exists";
+        private const string k_nonAbstractItrf          = "Service interface type {0} must be an interface";
+        private const string k_abstractImpl             = "Service implementation {0} cannot be an abstract type";
+        private const string k_invalidImplCstr          = "Service implementation {0} must contain only one constructor with dependencies";
+        private const string k_circularDependency       = "Service implementation {0} detected a circular dependency on construction";
+        private const string k_serviceNotDefined        = "Service implementation for {0} has not been defined";
+        private const string k_doesNotDeriveFromImpl    = "Service implementation {0} from derive from {1}";
 
         private static Dictionary<Type, Type>       k_definitions   = new();
         private static Dictionary<Type, Type[]>     k_dependencies  = new();
@@ -62,18 +63,15 @@ namespace ADM
             Type implType = k_definitions[type];
 
             foreach (Type depType in k_dependencies[implType])
-                ASSERT_FALSE(IsCyclical(implType, depType), string.Format(k_circularDependency, implType.Name));
+            {
+                ASSERT_TRUE(k_definitions.ContainsKey(depType), 
+                    string.Format(k_serviceNotDefined, depType.Name));
+
+                ASSERT_FALSE(IsCyclical(implType, k_definitions[depType]), 
+                    string.Format(k_circularDependency, implType.Name));
+            }
 
             return ConstructService(type, implType);
-        }
-
-        private static void ValidateDependencies()
-        {
-            foreach (Type implType in k_definitions.Values)
-            {
-                foreach (Type depType in k_dependencies[implType])
-                    ASSERT_FALSE(IsCyclical(implType, k_definitions[depType]), string.Format(k_circularDependency, implType.Name));
-            }
         }
 
         private static void AddDefinition(Type itrfType, Type implType)
@@ -83,6 +81,12 @@ namespace ADM
 
             ASSERT_FALSE(k_definitions.Any(kvp => kvp.Value.Equals(implType)), 
                 string.Format(k_duplicateImplType, implType.Name));
+
+            ASSERT_TRUE(itrfType.IsInterface,
+                string.Format(k_nonAbstractItrf, itrfType.Name));
+
+            ASSERT_TRUE(itrfType.IsAssignableFrom(implType),
+                string.Format(k_doesNotDeriveFromImpl, implType.Name, itrfType.Name));
 
             ASSERT_TRUE(itrfType.IsAbstract, 
                 string.Format(k_nonAbstractItrf, itrfType.Name));

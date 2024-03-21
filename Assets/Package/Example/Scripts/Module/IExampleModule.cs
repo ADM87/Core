@@ -1,6 +1,4 @@
-using ADM;
-
-namespace CoreExample
+namespace ADM.Example
 {
     public interface IExampleModule : ICoreModule
     {

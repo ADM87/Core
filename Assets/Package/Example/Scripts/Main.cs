@@ -1,7 +1,6 @@
-using ADM;
 using UnityEngine;
 
-namespace CoreExample
+namespace ADM.Example
 {
     internal static class Main
     {

@@ -1,7 +1,9 @@
 {
-    "name": "ADMCore",
-    "rootNamespace": "ADMCore",
-    "references": [],
+    "name": "ADM.Example",
+    "rootNamespace": "ADM.Example",
+    "references": [
+        "GUID:e1bb95b758806f247874c684c64b2686"
+    ],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
