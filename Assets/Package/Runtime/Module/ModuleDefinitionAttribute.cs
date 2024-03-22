@@ -9,10 +9,10 @@ namespace ADM
 
         public Type InterfaceType { get; private set; }
         public ModuleDefinitionAttribute(Type interfaceType)
-            : base(interfaceType)
+            : base(interfaceType, true)
         {
             ASSERT_TRUE(k_moduleBase.IsAssignableFrom(interfaceType), 
-                $"Module {interfaceType.Name} must derive from {k_moduleBase.Name}");
+                $"{interfaceType.Name} must derive from {k_moduleBase.Name}");
         }
     }
 }

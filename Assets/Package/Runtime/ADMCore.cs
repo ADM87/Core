@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace ADM
+﻿namespace ADM
 {
     public static class ADMCore
     {
@@ -12,7 +10,7 @@ namespace ADM
 
         private static void LoadModules()
         {
-            IEnumerable<ICoreModule> modules = ServiceProvider.GetAll<ICoreModule>();
+            var modules = ServiceProvider.GetAll<ICoreModule>();
             foreach (var module in modules)
                 module.Load();
         }
