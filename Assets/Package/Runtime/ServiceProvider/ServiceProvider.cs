@@ -40,7 +40,7 @@ namespace ADM
                 $"Implementation {type.Name} already exists for another service");
 
             ASSERT_TRUE(attribute.Interface.IsAssignableFrom(type),
-                $"Implementation {type.Name} must derive from {attribute.Interface.Name}");
+                $"{type.Name} must implement from {attribute.Interface.Name}");
 
             k_services.Add(attribute.Interface, new ServiceInfo
             {
@@ -74,34 +74,6 @@ namespace ADM
             return (T)Get(typeof(T));
         }
 
-        public static object Get(Type type)
-        {
-            ASSERT_TRUE(type.IsInterface,
-                $"{type.Name} is not a service interface. You can only access a service by providing it's interface type");
-
-            ASSERT_TRUE(k_services.ContainsKey(type),
-                $"{type.Name} has not been registered. Are you missing a ServiceDefinition attribute somewhere?");
-
-            ServiceInfo serviceInfo = k_services[type];
-
-            if (serviceInfo.Instance != null)
-                return serviceInfo.Instance;
-
-            foreach (Type dependency in serviceInfo.Dependencies)
-            {
-                ASSERT_TRUE(dependency.IsInterface,
-                    $"{dependency.Name} is not a service interface. Service dependencies must be service interfaces");
-
-                ASSERT_TRUE(k_services.ContainsKey(dependency),
-                    $"Missing service definition for {dependency.Name}");
-
-                ASSERT_FALSE(IsCircular(serviceInfo.Implementation, dependency),
-                    $"Detected circular dependency for {serviceInfo.Implementation.Name} and {k_services[dependency].Implementation.Name}");
-            }
-
-            return ConstructService(k_services[type]);
-        }
-
         public static IEnumerable<T> GetAll<T>()
         {
             return k_services
@@ -109,28 +81,64 @@ namespace ADM
                 .Select(kvp => (T)Get(kvp.Key));
         }
 
-        private static bool IsCircular(Type type, Type dependency)
+        public static object Get(Type type)
         {
-            ServiceInfo serviceInfo = k_services[dependency];
+            ServiceInfo serviceInfo = GetServiceInfo(type);
 
-            if (type.Equals(serviceInfo.Implementation))
-                return true;
+            if (serviceInfo.SingletonInstance != null)
+                return serviceInfo.SingletonInstance;
 
-            foreach (Type depType in serviceInfo.Dependencies)
+            if (serviceInfo.CheckDependencies)
+                CheckDependencies(serviceInfo);
+
+            return ConstructService(serviceInfo);
+        }
+
+        private static ServiceInfo GetServiceInfo(Type type)
+        {
+            ASSERT_TRUE(type.IsInterface,
+                $"Service interface required for accessing service definition information, [{type.Name}]");
+
+            ASSERT_TRUE(k_services.ContainsKey(type),
+                $"{type.Name} is not a known service interface. Are you missing a ServiceDefinition attribute?");
+
+            return k_services[type];
+        }
+
+        private static void CheckDependencies(ServiceInfo serviceInfo)
+        {
+            foreach (Type dependency in serviceInfo.Dependencies)
             {
-                if (IsCircular(type, depType))
+                ASSERT_FALSE(serviceInfo.Interface.Equals(dependency),
+                    $"Service {serviceInfo.Interface.Name} cannot have a constructor dependency of {dependency.Name}");
+
+                ServiceInfo dependencyInfo = GetServiceInfo(dependency);
+
+                ASSERT_FALSE(IsCircular(serviceInfo, dependencyInfo),
+                    $"Detected circular dependencys for {serviceInfo.Interface.Name}, {dependency.Name}");
+
+                if (dependencyInfo.CheckDependencies)
+                    CheckDependencies(dependencyInfo);
+            }
+            serviceInfo.CheckDependencies = false;
+        }
+
+        private static bool IsCircular(ServiceInfo serviceInfo, ServiceInfo dependencyInfo)
+        {
+            foreach (Type dependency in dependencyInfo.Dependencies)
+            {
+                if (IsCircular(serviceInfo, GetServiceInfo(dependency)))
                     return true;
             }
-
             return false;
         }
 
         private static object ConstructService(ServiceInfo serviceInfo)
         {
-            if (serviceInfo.Instance != null)
-                return serviceInfo.Instance;
+            if (serviceInfo.SingletonInstance != null)
+                return serviceInfo.SingletonInstance;
 
-            object service;
+            object instance;
 
             if (serviceInfo.Dependencies.Any())
             {
@@ -144,17 +152,17 @@ namespace ADM
                     dependencies.Add(ConstructService(k_services[depType]));
                 }
 
-                service = Activator.CreateInstance(serviceInfo.Implementation, dependencies.ToArray(), new object[0]);
+                instance = Activator.CreateInstance(serviceInfo.Implementation, dependencies.ToArray(), new object[0]);
             }
             else
             {
-                service = Activator.CreateInstance(serviceInfo.Implementation);
+                instance = Activator.CreateInstance(serviceInfo.Implementation);
             }
 
             if (serviceInfo.IsSingleton)
-                serviceInfo.Instance = service;
+                serviceInfo.SingletonInstance = instance;
 
-            return service;
+            return instance;
         }
     }
 }
