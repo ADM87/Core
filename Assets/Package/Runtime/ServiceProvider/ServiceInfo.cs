@@ -10,6 +10,6 @@ namespace ADM
         public IEnumerable<Type> Dependencies   { get; set; }
         public bool IsSingleton                 { get; set; }
         public bool CheckDependencies           { get; set; } = true;
-        public object SingletonInstance                  { get; set; }
+        public object SingletonInstance         { get; set; }
     }
 }
