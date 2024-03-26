@@ -138,31 +138,18 @@ namespace ADM
             if (serviceInfo.SingletonInstance != null)
                 return serviceInfo.SingletonInstance;
 
-            object instance;
+            List<object> dependencies = new List<object>();
+            object service = null;
 
-            if (serviceInfo.Dependencies.Any())
-            {
-                List<object> dependencies = new List<object>();
-
-                foreach (Type depType in serviceInfo.Dependencies)
-                {
-                    ASSERT_TRUE(k_services.ContainsKey(depType),
-                        $"Missing service definition for {depType.Name}");
-
-                    dependencies.Add(ConstructService(k_services[depType]));
-                }
-
-                instance = Activator.CreateInstance(serviceInfo.Implementation, dependencies.ToArray(), new object[0]);
-            }
-            else
-            {
-                instance = Activator.CreateInstance(serviceInfo.Implementation);
-            }
+            foreach (Type dependency in serviceInfo.Dependencies)
+                dependencies.Add(ConstructService(GetServiceInfo(dependency));
+                                     
+            service = Activator.CreateInstance(serviceInfo.Implementation, dependencies.ToArray(), new object[0]);
 
             if (serviceInfo.IsSingleton)
-                serviceInfo.SingletonInstance = instance;
+                serviceInfo.SingletonInstance = service;
 
-            return instance;
+            return service;
         }
     }
 }
