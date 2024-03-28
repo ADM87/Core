@@ -142,7 +142,7 @@ namespace ADM
             object service = null;
 
             foreach (Type dependency in serviceInfo.Dependencies)
-                dependencies.Add(ConstructService(GetServiceInfo(dependency));
+                dependencies.Add(ConstructService(GetServiceInfo(dependency)));
                                      
             service = Activator.CreateInstance(serviceInfo.Implementation, dependencies.ToArray(), new object[0]);
 

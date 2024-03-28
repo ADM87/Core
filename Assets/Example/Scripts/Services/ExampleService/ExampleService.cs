@@ -2,7 +2,7 @@
 
 namespace ADM.Example
 {
-    [ServiceDefinition(typeof(IExampleService), IsSingleton: true)]
+    [ServiceDefinition(typeof(IExampleService), isSingleton: true)]
     internal class ExampleService : IExampleService
     {
         public IEnumerable<string> GetExampleNames()
