@@ -2,18 +2,18 @@ using UnityEngine;
 
 namespace ADM.Example
 {
-    internal class ExampleModule : MonoBehaviour, IEventListener<ExampleEvent>
+    internal class ExampleModule : MonoBehaviour
     {
         private void Awake()
         {
-            if (ServiceProvider.TryGet(out IEventDispatcher<ExampleEvent> eventDispatcher))
-                eventDispatcher.AddListener(this);
+            if (ServiceProvider.TryGet(out IEventDispatcher<ExampleEvent> exampleEvents))
+                exampleEvents.Send(new ExampleEvent(new string[] { "red", "green", "blue" }));
         }
 
-        public void HandleEvent(ExampleEvent @event)
+        private void Start()
         {
             if (ServiceProvider.TryGet(out IExampleService exampleService))
-                exampleService.ProcessColorNames(@event.ColorNames);
+                Debug.Log(string.Join(", ", exampleService.GetColorNames()));
         }
     }
 }

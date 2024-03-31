@@ -3,11 +3,26 @@
 namespace ADM.Example
 {
     [ServiceDefinition(typeof(IExampleService), isSingleton: true)]
-    internal class ExampleService : IExampleService
+    internal class ExampleService : IExampleService, IEventListener<ExampleEvent>
     {
-        public void ProcessColorNames(IEnumerable<string> colorNames)
+        private IEnumerable<string> m_colorNames;
+
+        // Services will be injects with their dependencies upon construction.
+        // Be sure to understand your dependency tree, as circular dependencies
+        // are not allow and will result in an error being thrown.
+        public ExampleService(IEventDispatcher<ExampleEvent> exampleEvents)
         {
-            UnityEngine.Debug.Log(string.Join(", ", colorNames));
+            exampleEvents.AddListener(this);
+        }
+
+        public IEnumerable<string> GetColorNames()
+        {
+            return m_colorNames;
+        }
+
+        public void HandleEvent(ExampleEvent @event)
+        {
+            m_colorNames = @event.ColorNames;
         }
     }
 }

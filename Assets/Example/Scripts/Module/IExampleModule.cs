@@ -1,7 +1,0 @@
-namespace ADM.Example
-{
-    public interface IExampleModule
-    {
-
-    }
-}

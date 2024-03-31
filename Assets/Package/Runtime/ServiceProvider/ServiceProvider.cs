@@ -57,6 +57,15 @@ namespace ADM
             });
         }
 
+        public static void ConstructSingletons()
+        {
+            foreach (var kvp in k_services)
+            {
+                if (kvp.Value.IsSingleton)
+                    Get(kvp.Key);
+            }
+        }
+
         private static Type[] GetDependencies(Type type)
         {
             return GetConstructor(type)
