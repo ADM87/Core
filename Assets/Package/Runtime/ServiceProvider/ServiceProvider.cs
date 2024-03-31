@@ -10,7 +10,7 @@ namespace ADM
     {
         private static Dictionary<Type, ServiceInfo> k_services = new();
 
-        internal static void CollectServiceDefinitions()
+        public static void CollectDefinitions()
         {
             foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
             {
@@ -23,31 +23,37 @@ namespace ADM
                     if (attribute == null)
                         continue;
 
-                    AddService(type, attribute);
+                    AddService(attribute.Interface, type, attribute.IsSingleton);
                 }
             }
         }
-        
-        private static void AddService(Type type, ServiceDefinitionAttribute attribute)
+
+        public static void AddService<TInterface, TImplementation>(bool isSingleton = false) 
+            where TImplementation : TInterface
         {
-            ASSERT_FALSE(k_services.ContainsKey(attribute.Interface),
-                $"Definition for {attribute.Interface.Name} already exists");
+            AddService(typeof(TInterface), typeof(TImplementation), isSingleton);
+        }
+        
+        public static void AddService(Type anInterface, Type anImplementation, bool isSingleton)
+        {
+            ASSERT_FALSE(k_services.ContainsKey(anInterface),
+                $"Definition for {anInterface.Name} already exists");
 
-            ASSERT_FALSE(type.IsAbstract,
-                $"Implementation {type.Name} cannot be an abstract type");
+            ASSERT_FALSE(anImplementation.IsAbstract,
+                $"Implementation {anImplementation.Name} cannot be an abstract type");
 
-            ASSERT_FALSE(k_services.Values.Any(service => service.Implementation.Equals(type)),
-                $"Implementation {type.Name} already exists for another service");
+            ASSERT_FALSE(k_services.Values.Any(service => service.Implementation.Equals(anImplementation)),
+                $"Implementation {anImplementation.Name} already exists for another service");
 
-            ASSERT_TRUE(attribute.Interface.IsAssignableFrom(type),
-                $"{type.Name} must implement from {attribute.Interface.Name}");
+            ASSERT_TRUE(anInterface.IsAssignableFrom(anImplementation),
+                $"{anImplementation.Name} must implement from {anInterface.Name}");
 
-            k_services.Add(attribute.Interface, new ServiceInfo
+            k_services.Add(anInterface, new ServiceInfo
             {
-                Interface       = attribute.Interface,
-                Implementation  = type,
-                Dependencies    = GetDependencies(type),
-                IsSingleton     = attribute.IsSingleton
+                Interface       = anInterface,
+                Implementation  = anImplementation,
+                Dependencies    = GetDependencies(anImplementation),
+                IsSingleton     = isSingleton
             });
         }
 
@@ -67,6 +73,20 @@ namespace ADM
                 $"Invalid number of contructors found on service {type.Name}. Expected 1, found {constructors.Length}");
 
             return constructors[0];
+        }
+
+        public static bool TryGet<T>(out T service)
+        {
+            Type serviceType = typeof(T);
+
+            if (k_services.ContainsKey(serviceType))
+            {
+                service = (T)Get(serviceType);
+                return true;
+            }
+
+            service = default;
+            return false;
         }
 
         public static T Get<T>()

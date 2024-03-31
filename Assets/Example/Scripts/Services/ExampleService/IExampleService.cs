@@ -4,6 +4,6 @@ namespace ADM.Example
 {
     public interface IExampleService
     {
-        IEnumerable<string> GetExampleNames();
+        void ProcessColorNames(IEnumerable<string> colorNames);
     }
 }

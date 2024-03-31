@@ -5,9 +5,9 @@ namespace ADM.Example
     [ServiceDefinition(typeof(IExampleService), isSingleton: true)]
     internal class ExampleService : IExampleService
     {
-        public IEnumerable<string> GetExampleNames()
+        public void ProcessColorNames(IEnumerable<string> colorNames)
         {
-            return new string[] { "red", "blue", "yellow", "green", "purple" };
+            UnityEngine.Debug.Log(string.Join(", ", colorNames));
         }
     }
 }

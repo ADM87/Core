@@ -1,20 +1,19 @@
-using static ADM.Log;
+using UnityEngine;
 
 namespace ADM.Example
 {
-    [ModuleDefinition(typeof(IExampleModule))]
-    internal class ExampleModule : IExampleModule
+    internal class ExampleModule : MonoBehaviour, IEventListener<ExampleEvent>
     {
-        private readonly IExampleService m_exampleService;
-
-        public ExampleModule(IExampleService exampleService)
+        private void Awake()
         {
-            m_exampleService = exampleService;
+            if (ServiceProvider.TryGet(out IEventDispatcher<ExampleEvent> eventDispatcher))
+                eventDispatcher.AddListener(this);
         }
 
-        public void Load()
+        public void HandleEvent(ExampleEvent @event)
         {
-            LOG_DEBUG(string.Join(", ", m_exampleService.GetExampleNames()));
+            if (ServiceProvider.TryGet(out IExampleService exampleService))
+                exampleService.ProcessColorNames(@event.ColorNames);
         }
     }
 }
