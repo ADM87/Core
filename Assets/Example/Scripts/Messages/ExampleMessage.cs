@@ -2,12 +2,12 @@ using System.Collections.Generic;
 
 namespace ADM.Example
 {
-    public class ExampleEvent : EventBase
+    public class ExampleMessage : MessageBase
     {
         public IEnumerable<string> ColorNames { get; private set; }
 
-        public ExampleEvent(IEnumerable<string> colorNames)
-            : base("exampleEvent")
+        public ExampleMessage(IEnumerable<string> colorNames)
+            : base("exampleMessage")
         {
             ColorNames = colorNames;
         }

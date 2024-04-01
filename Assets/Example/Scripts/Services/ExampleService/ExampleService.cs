@@ -3,16 +3,16 @@
 namespace ADM.Example
 {
     [ServiceDefinition(typeof(IExampleService), isSingleton: true)]
-    internal class ExampleService : IExampleService, IEventListener<ExampleEvent>
+    internal class ExampleService : IExampleService, IMessageListener<ExampleMessage>
     {
         private IEnumerable<string> m_colorNames;
 
         // Services will be injects with their dependencies upon construction.
         // Be sure to understand your dependency tree, as circular dependencies
         // are not allow and will result in an error being thrown.
-        public ExampleService(IEventDispatcher<ExampleEvent> exampleEvents)
+        public ExampleService(IMessenger<ExampleMessage> messenger)
         {
-            exampleEvents.AddListener(this);
+            messenger.AddListener(this);
         }
 
         public IEnumerable<string> GetColorNames()
@@ -20,9 +20,9 @@ namespace ADM.Example
             return m_colorNames;
         }
 
-        public void HandleEvent(ExampleEvent @event)
+        public void HandleMessage(ExampleMessage message)
         {
-            m_colorNames = @event.ColorNames;
+            m_colorNames = message.ColorNames;
         }
     }
 }

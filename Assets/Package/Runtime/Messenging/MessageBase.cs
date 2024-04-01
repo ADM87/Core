@@ -1,9 +1,9 @@
 namespace ADM
 {
-    public abstract class EventBase
+    public abstract class MessageBase
     {
         public string Name { get; private set; }
-        public EventBase(string name)
+        public MessageBase(string name)
             => Name = name;
     }
 }

@@ -6,8 +6,8 @@ namespace ADM.Example
     {
         private void Awake()
         {
-            if (ServiceProvider.TryGet(out IEventDispatcher<ExampleEvent> exampleEvents))
-                exampleEvents.Send(new ExampleEvent(new string[] { "red", "green", "blue" }));
+            if (ServiceProvider.TryGet(out IMessenger<ExampleMessage> messenger))
+                messenger.Send(new ExampleMessage(new string[] { "red", "green", "blue" }));
         }
 
         private void Start()
