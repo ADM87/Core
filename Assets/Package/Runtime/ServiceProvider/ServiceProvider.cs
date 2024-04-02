@@ -154,6 +154,9 @@ namespace ADM
 
         private static bool IsCircular(ServiceInfo serviceInfo, ServiceInfo dependencyInfo)
         {
+            if (serviceInfo.Interface.Equals(dependencyInfo.Interface))
+                return true;
+            
             foreach (Type dependency in dependencyInfo.Dependencies)
             {
                 if (IsCircular(serviceInfo, GetServiceInfo(dependency)))
