@@ -7,9 +7,9 @@ namespace ADM.Example
     {
         private IEnumerable<string> m_colorNames;
 
-        // Services will be injects with their dependencies upon construction.
-        // Be sure to understand your dependency tree, as circular dependencies
-        // are not allow and will result in an error being thrown.
+        // Services will be injected with their dependencies upon construction.
+        // Circlar dependencies are not allow on construction of a service, 
+        // but are allowed outside of the constructor.
         public ExampleService(IMessenger<ExampleMessage> messenger)
         {
             messenger.AddListener(this);
