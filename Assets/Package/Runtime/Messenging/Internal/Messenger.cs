@@ -3,7 +3,7 @@ using System.Collections.Generic;
 namespace ADM
 {
     internal class Messenger<T> : IMessenger<T>
-        where T : MessageBase
+        where T : IMessage
     {
         private HashSet<IMessageListener<T>> m_messageListeners = new();
 

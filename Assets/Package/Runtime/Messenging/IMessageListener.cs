@@ -1,7 +1,7 @@
 namespace ADM
 {
     public interface IMessageListener<T>
-        where T : MessageBase
+        where T : IMessage
     {
         void HandleMessage(T message);
     }

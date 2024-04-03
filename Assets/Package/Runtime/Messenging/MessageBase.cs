@@ -1,9 +1,7 @@
 namespace ADM
 {
-    public abstract class MessageBase
+    public interface IMessage
     {
-        public string Name { get; private set; }
-        public MessageBase(string name)
-            => Name = name;
+        public string MessageName { get; }
     }
 }
