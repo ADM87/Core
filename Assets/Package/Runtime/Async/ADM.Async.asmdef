@@ -1,17 +1,16 @@
 {
-    "name": "ADM.Example",
-    "rootNamespace": "ADM.Example",
+    "name": "ADM.Async",
+    "rootNamespace": "ADM",
     "references": [
-        "GUID:b49535c07eee63246b0b6e5848da19d4",
         "GUID:aaa5dd412454a6d448f0d502a46fca5d",
-        "GUID:10d3673fd9ac6fd43b74b0e5ac79bf36"
+        "GUID:b71056eef23404a4384f8ec68f465e4f"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,
     "precompiledReferences": [],
-    "autoReferenced": true,
+    "autoReferenced": false,
     "defineConstraints": [],
     "versionDefines": [],
     "noEngineReferences": false

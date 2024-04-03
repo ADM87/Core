@@ -1,3 +1,5 @@
+using System.Threading;
+using System.Threading.Tasks;
 using UnityEngine;
 
 namespace ADM.Example
@@ -14,6 +16,25 @@ namespace ADM.Example
         {
             if (ServiceProvider.TryGet(out IExampleService exampleService))
                 Debug.Log(string.Join(", ", exampleService.GetColorNames()));
+
+            if (ServiceProvider.TryGet(out IAsyncService asyncService))
+            {
+                asyncService.RunAsync(async (CancellationToken ct) =>
+                {
+                    await Task.Delay(5);
+                    Debug.Log("Log 1");
+                });
+
+                Debug.Log("Log 2");
+
+                asyncService.RunAsync(DoSomethingAsync);
+            }
+        }
+
+        private async Task DoSomethingAsync(CancellationToken ct)
+        {
+            await Task.Delay(10);
+            Debug.Log("Log 3");
         }
     }
 }
