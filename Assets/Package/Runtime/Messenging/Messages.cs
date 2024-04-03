@@ -1,6 +1,6 @@
 namespace ADM
 {
-    public static class MessageRegistry
+    public static class Messages
     {
         public static void RegisterMessageType<T>(bool isSingleton = false)
             where T : MessageBase

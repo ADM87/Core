@@ -7,22 +7,23 @@ namespace ADM.Example
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterAssembliesLoaded)]
         private static void Boot()
         {
-            // Registers the example message type. This will create a IMessenger<T>
-            // service definition with the service provider that will allow 
-            // sending and receiving messages of type ExampleMessage.
-            // Flagging the message type as a singleton will ensure the IMessenger<T>
-            // is the same instances anytime it is accessed from the ServiceProvider.
-            MessageRegistry.RegisterMessageType<ExampleMessage>(isSingleton: true);
+            // Register a message type.
+            // This will create a service definition for an IMessenger<T> which can be
+            // accessed through the ServiceProvider.
+            // Use the IMessenger<T> to send and receive messages of a given type.
+            // Setting a message type as a singleton will cause the same IMessenger<T>
+            // service instance to be used for the given message type.
+            Messages.RegisterMessageType<ExampleMessage>(isSingleton: true);
 
             // Collection definitions with the ServiceDefinition attribute.
             ServiceProvider.CollectDefinitions();
-            
-            // After all other definition registration is complete, 
+
+            // After all other definition registration is complete,
             // we construst all service flagged as singletons.
             //
-            // Note: This is optional depending on how you want to structure you systems.
-            //       This ensures that any singleton services are ready to use before the
-            //       rest of your game systems attempt to use them..
+            // Note - This call is optional. If you have singleton services that you want
+            //        to exist right away, calling this will construct those services and
+            //        and of their dependencies. Remember, this will applies to all singleton services.
             ServiceProvider.ConstructSingletons();
         }
     }

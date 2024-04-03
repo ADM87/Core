@@ -28,12 +28,12 @@ namespace ADM
             }
         }
 
-        public static void AddService<TInterface, TImplementation>(bool isSingleton = false) 
+        public static void AddService<TInterface, TImplementation>(bool isSingleton = false)
             where TImplementation : TInterface
         {
             AddService(typeof(TInterface), typeof(TImplementation), isSingleton);
         }
-        
+
         public static void AddService(Type anInterface, Type anImplementation, bool isSingleton)
         {
             ASSERT_FALSE(k_services.ContainsKey(anInterface),
@@ -78,7 +78,7 @@ namespace ADM
         {
             var constructors = type.GetConstructors();
 
-            ASSERT_TRUE(constructors.Length == 1, 
+            ASSERT_TRUE(constructors.Length == 1,
                 $"Invalid number of contructors found on service {type.Name}. Expected 1, found {constructors.Length}");
 
             return constructors[0];
@@ -156,7 +156,7 @@ namespace ADM
         {
             if (serviceInfo.Interface.Equals(dependencyInfo.Interface))
                 return true;
-            
+
             foreach (Type dependency in dependencyInfo.Dependencies)
             {
                 if (IsCircular(serviceInfo, GetServiceInfo(dependency)))
@@ -175,7 +175,7 @@ namespace ADM
 
             foreach (Type dependency in serviceInfo.Dependencies)
                 dependencies.Add(ConstructService(GetServiceInfo(dependency)));
-                                     
+
             service = Activator.CreateInstance(serviceInfo.Implementation, dependencies.ToArray(), new object[0]);
 
             if (serviceInfo.IsSingleton)
