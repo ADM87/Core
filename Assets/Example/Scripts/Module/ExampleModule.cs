@@ -6,16 +6,20 @@ namespace ADM.Example
 {
     internal class ExampleModule : MonoBehaviour
     {
+        [ServiceInjection]
+        public IExampleService TestService { get; private set; }
+
         private void Awake()
         {
+            ServiceInjector.InjectDependencies(this);
+
             if (ServiceProvider.TryGet(out IMessenger<ExampleMessage> messenger))
                 messenger.Send(new ExampleMessage(new string[] { "red", "green", "blue" }));
         }
 
         private void Start()
         {
-            if (ServiceProvider.TryGet(out IExampleService exampleService))
-                Debug.Log(string.Join(", ", exampleService.GetColorNames()));
+            Debug.Log(string.Join(", ", TestService.GetColorNames()));
 
             if (ServiceProvider.TryGet(out IAsyncService asyncService))
             {
