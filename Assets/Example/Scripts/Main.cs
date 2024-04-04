@@ -13,7 +13,7 @@ namespace ADM.Example
             // Use the IMessenger<T> to send and receive messages of a given type.
             // Setting a message type as a singleton will cause the same IMessenger<T>
             // service instance to be used for the given message type.
-            Messages.RegisterMessageType<ExampleMessage>(isSingleton: true);
+            MessageTypes.Register<ExampleMessage>(isSingleton: true);
 
             // Collection definitions with the ServiceDefinition attribute.
             ServiceProvider.CollectDefinitions();
