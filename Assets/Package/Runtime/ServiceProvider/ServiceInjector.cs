@@ -12,7 +12,7 @@ namespace ADM
 
             foreach (PropertyInfo property in targetType.GetProperties())
             {
-                if (property.GetCustomAttribute<ServiceInjectionAttribute>() == null)
+                if (property.GetCustomAttribute<ServiceDependencyAttribute>() == null)
                     continue;
 
                 ASSERT_TRUE(property.GetSetMethod(true) != null,

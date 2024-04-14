@@ -6,7 +6,7 @@ namespace ADM.Example
 {
     internal class ExampleModule : MonoBehaviour
     {
-        [ServiceInjection]
+        [ServiceDependency]
         public IExampleService TestService { get; private set; }
 
         private void Awake()
